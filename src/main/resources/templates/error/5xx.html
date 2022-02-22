@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<body>
+<section class="container" layout:fragment="content">
+    <p class="h5" th:text="@{path}"></p>
+    <p class="h5" th:text="@{error}"></p>
+    <p class="h5" th:text="${status}"></p>
+</section>
+</body>
+</html>

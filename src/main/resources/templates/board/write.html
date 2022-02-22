@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <script src="/smarteditor2/js/HuskyEZCreator.js"></script>
+</head>
+
+<body>
+    <form id="writeForm" class="container" layout:fragment="content" method = "post" enctype="multipart/form-data" action="/board/save">
+        <legend class="visually-hidden">게시물 작성</legend>
+        <input type="hidden" class="form-control" id="id" name="id" th:value="${boardVO.id}">
+        <input type="hidden" class="form-control" id="code" name="code" th:value="${boardVO.code}">
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="제목" th:value="${boardVO.title}">
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" id="content" name="content" rows="10" placeholder="내용" th:utext="${boardVO.content}"></textarea>
+        </div>
+        <div class="mb-3">
+            <p>버튼을 누르면 파일이 삭제됩니다.</p>
+            <div class="mb-3" th:each="file: ${uploadFileVO}">
+                <p>
+                    <button class="btn btn-danger btnDel" th:fileId = "${file.id}" type="button" th:text="${file.fileName}"></button>
+                </p>
+            </div>
+        </div>
+        <div class="mb-3">
+            <input type="file" name="file" class="form-control"/>
+            <input type="file" name="file" class="form-control"/>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-center mb-3">
+            <button type="submit" class="btn btn-success">저장</button>
+            <a href="/board/list" class="btn btn-secondary">취소</a>
+        </div>
+
+        <script>
+            $(function(){
+
+            $('.btnDel').click(function(){
+                const fileId = $(this).attr('fileId');
+                if(fileId) {
+                    $.get('http://localhost:8080/board/deleteFile/' + fileId, function(res){
+                        console.log(res);
+                        if(res.success) location.reload();
+                    });
+                }
+            });
+
+            var oEditors = [];
+            nhn.husky.EZCreator.createInIFrame({
+            oAppRef: oEditors,
+            elPlaceHolder: "content",
+            sSkinURI: "/smarteditor2/SmartEditor2Skin.html",
+            fCreator: "createSEditor2",
+            htParams : {
+            bUseToolbar : true,
+            bUseVerticalResizer : true,
+            bUseModeChanger : true,
+            bSkipXssFilter : true,
+            }, //boolean
+             fCreator: "createSEditor2"
+            });
+
+            $('form').submit(function(e){
+             e.preventDefault();
+             oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+             var content = $('#content').val();
+             this.submit();
+            });
+           });
+        </script>
+    </form>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.chapter6.mapper.RefreshTokenMapper">
+
+    <!-- 토큰으로 정보 조회 -->
+    <select id="selectByToken" parameterType="String" resultType="RefreshTokenVO">
+        SELECT
+            r.id,
+            r.token,
+            r.refresh_count,
+            r.expiry_date,
+            r.user_id,
+            m.user_id AS userNm
+        FROM refresh_token r LEFT JOIN member m ON r.user_id = m.id
+            WHERE token = #{token}
+    </select>
+
+    <!-- member id 존재 여부 -->
+    <select id="existMemberId" parameterType="int" resultType="boolean">
+        SELECT IF(COUNT(*) >= 1, 1, 0)
+            FROM refresh_token
+        WHERE user_id = #{id}
+    </select>
+
+    <!-- 토큰 최초 생성 -->
+    <insert id="insertToken" parameterType="RefreshTokenVO">
+        INSERT INTO refresh_token (
+            token,
+            refresh_count,
+            user_id,
+            reg_date,
+            expiry_date
+        ) VALUES (
+            #{token},
+            1,
+            #{userId},
+            NOW(),
+            #{expiryDate}
+        )
+    </insert>
+
+    <!-- 토큰 삭제 -->
+    <delete id="deleteTokenById">
+        DELETE FROM refresh_token
+            WHERE id = #{id}
+    </delete>
+
+    <!-- 토큰 카운트 증가 -->
+    <update id="updateTokenCount" parameterType="RefreshTokenVO">
+        UPDATE refresh_token SET
+            token = #{token},
+            refresh_count = refresh_count + 1,
+            mod_date = NOW(),
+            expiry_date = #{expiryDate}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

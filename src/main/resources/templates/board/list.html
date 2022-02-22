@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<body>
+    <section class="container" layout:fragment="content">
+        <h2 class="visually-hidden">게시물 목록</h2>
+        <form th:action="@{/board/list}" method="get">
+            <fieldset class="d-flex justify-content-end mb-1">
+                <legend class="visually-hidden">검색</legend>
+                <div class="col-auto">
+                    <select class="form-select" name="srchType" aria-label="검색 분류">
+                        <option value="title" th:selected="${searchHelper.srchType}=='title'">제목</option>
+                        <option value="content" th:selected="${searchHelper.srchType}=='content'">내용</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="text" name="srchKeyword" class="form-control" aria-describedby="검색어" th:value="${searchHelper.srchKeyword}" />
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" type="submit">검색</button>
+                </div>
+            </fieldset>
+        </form>
+        <form id = "deleteForm" method = "post" action="/board/delete">
+            <table class="table table-striped mb-3">
+                <caption class="visually-hidden">게시물 목록</caption>
+                <colgroup>
+                    <col style="width: 50px;">
+                    <col style="width: 80px;">
+                    <col>
+                    <col style="width: 120px;">
+                    <col style="width: 170px;">
+                    <col style="width: 80px;">
+                </colgroup>
+                <thead>
+                <tr class="text-center">
+                    <th>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="checkAll">
+                            <label class="form-check-label visually-hidden" for="checkAll">
+                                전체선택
+                            </label>
+                        </div>
+                    </th>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${result}">
+                    <td class="text-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" th:id="@{|chk_${result.id}|}" name="del[]" th:value="${result.id}">
+                            <label class="form-check-label visually-hidden" th:for="@{|chk_${result.id}|}">
+                                삭제 체크
+                            </label>
+                        </div>
+                    </td>
+                    <td class="text-center" th:text="${result.id}"></td>
+                    <td><a th:href="@{/board/view(id=${result.id},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" th:text="${result.title}"></a></td>
+                    <td class="text-center" th:text="${result.regId}"></td>
+                    <td class="text-center" th:text="${#temporals.format(result.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td class="text-center" th:text="${result.count}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="d-flex justify-content-between mb-3">
+            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+            <a th:href="@{/board/write(srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="btn btn-secondary">글쓰기</a>
+        </div>
+        <script>
+            $(function(){
+                $('#btnDelete').click(function(){
+                    $('#deleteForm').submit();
+                });
+            });
+        </script>
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a th:href="@{/board/list(page=1,srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="page-link" aria-label="처음">
+                        <span aria-hidden="true">처음</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a th:href="@{/board/list(page=${searchHelper.prevBlock},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="page-link" aria-label="이전">
+                        <span aria-hidden="true">이전</span>
+                    </a>
+                </li>
+                <th:block th:with="start=${searchHelper.startPage},end=${searchHelper.endPage}">
+                    <li class="page-item" th:each="btn : ${#numbers.sequence(start,end)}">
+                        <a th:href="@{/board/list(page=${btn},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="page-link" th:text="${btn}"></a>
+                    </li>
+                </th:block>
+                <li class="page-item">
+                    <a th:href="@{/board/list(page=${searchHelper.nextBlock},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="page-link" aria-label="다음">
+                        <span aria-hidden="true">다음</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a th:href="@{/board/list(page=${searchHelper.totalPageCnt},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="page-link" aria-label="마지막">
+                        <span aria-hidden="true">마지막</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+</body>
+</html>

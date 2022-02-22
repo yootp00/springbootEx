@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<article class="container" layout:fragment="content" th:object="${boardVO}">
+    <h2 class="visually-hidden">게시물 내용</h2>
+    <header class="alert alert-success" role="alert">
+        <h4 class="alert-heading" th:text="*{title}" ></h4>
+        <hr>
+        <p class="mb-0 text-end">
+            <span class="ms-3" th:text="@{|작성자 : *{regId}|}"></span>
+            <span class="ms-3" th:text="@{|작성일 : *{#temporals.format(regDate, 'yyyy-MM-dd HH:mm')}|}"></span>
+            <span class="ms-3" th:text="@{|조회수 : *{count}|}"></span>
+        </p>
+    </header>
+<!--    <section th:with="content = *{content}">-->
+<!--        <p class="h6 mb-5" th:utext="${#strings.replace(content,'&#10;','&lt;br &gt;')}"></p>-->
+<!--    </section>-->
+    <section>
+        <p class="h6 mb-5" th:utext="*{content}"></p>
+    </section>
+    <section th:each="file : ${uploadFileVO}">
+        <img th:if="${file.contentType.toString().contains('image')}" th:src="@{|/board/file/${file.id}|}" alt="">
+        <a th:unless = "${file.contentType.toString().contains('image')}" th:href="@{|/board/file/${file.id}|}" th:text="${file.fileName}"></a>
+    </section>
+    <hr>
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <a th:href="@{/board/modify(id=*{id},srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="btn btn-warning">수정</a>
+            <button type="button" class="btn btn-danger">삭제</button>
+        </div>
+        <a th:href="@{/board/list(srchCode=${searchHelper.srchCode},srchType=${searchHelper.srchType},srchKeyword=${searchHelper.srchKeyword})}" class="btn btn-secondary">목록</a>
+    </div>
+</article>
+</body>
+</html>

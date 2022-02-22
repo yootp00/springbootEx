@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.chapter6.mapper.BoardMapper">
+    <!--게시물 목록-->
+    <select id ="selectBoardVO" parameterType="SearchHelper" resultType="BoardVO">
+        SELECT
+            id,
+            title,
+            count,
+            reg_id,
+            reg_date
+        FROM board
+        <where>
+            <if test="srchType=='title'">
+                AND title LIKE CONCAT('%',#{srchKeyword},'%')
+            </if>
+            <if test="srchType=='content'">
+                AND content LIKE CONCAT('%',#{srchKeyword},'%')
+            </if>
+            <if test="srchCode">
+                AND code  = #{srchCode}
+            </if>
+        </where>
+            ORDER BY id DESC
+            LIMIT #{startIndex},#{pageSize}
+    </select>
+    <!--게시물 목록 카운트-->
+    <select id="countBoardVO" parameterType="SearchHelper" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM board
+        <where>
+            <if test="srchType=='title'">
+                AND title LIKE CONCAT('%',#{srchKeyword},'%')
+            </if>
+            <if test="srchType=='content'">
+                AND content LIKE CONCAT('%',#{srchKeyword},'%')
+            </if>
+            <if test="srchCode">
+                AND code  = #{srchCode}
+            </if>
+        </where>
+    </select>
+    <!-- 게시물 선택-->
+    <select id="selectBoardVOById" parameterType="int" resultType="BoardVO">
+        SELECT
+            id,
+            code,
+            title,
+            content,
+            count,
+            reg_id,
+            reg_date,
+            mod_date
+        FROM board
+            WHERE id = #{id}
+    </select>
+    <!--게시물 저장-->
+    <insert id = "insertBoardVO" parameterType="BoardVO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO board(
+            code,
+            title,
+            content,
+            reg_id,
+            reg_date
+        ) VALUES(
+            #{code},
+            #{title},
+            #{content},
+            #{regId},
+            NOW()
+        )
+    </insert>
+    <!-- 게시물 수정 -->
+    <update id="updateBoardVO" parameterType="BoardVO">
+        UPDATE board SET
+            title = #{title},
+            content = #{content},
+            mod_date = NOW()
+        WHERE id = #{id}
+
+    </update>
+    <!-- 조회수 증가 -->
+    <update id="updateCount" parameterType="int">
+        UPDATE board SET
+            count = count +1
+        WHERE id = #{id}
+
+    </update>
+    <!-- 게시물 삭제-->
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM board
+        WHERE id = #{id}
+    </delete>
+</mapper>

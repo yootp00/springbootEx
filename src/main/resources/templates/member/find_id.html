@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout/layout}">
+<body>
+<section class="container" layout:fragment="content">
+    <h2 class="visually-hidden">아이디 찾기</h2>
+    <div class="d-flex justify-content-center">
+        <form class="col-md-4" method="post" action="/member/find_id">
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="이름">
+            </div>
+            <div class="form-group mb-3">
+                <label for="email">이메일</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="email">
+            </div>
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary">아이디 찾기</button>
+            </div>
+            <nav class="d-flex justify-content-between">
+                <a href="/member/join">회원가입</a>
+                <ul class="list-inline">
+                    <li class="list-inline-item"><a href="/member/find_id">아이디 찾기</a></li>
+                    <li class="list-inline-item"><a href="/member/find_pw">비밀번호 찾기</a></li>
+                </ul>
+            </nav>
+        </form>
+    </div>
+</section>
+</body>
+</html>

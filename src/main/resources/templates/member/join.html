@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<body>
+<section class="container" layout:fragment="content">
+
+    <style>
+        .btn-dup {width: 140px;}
+    </style>
+
+    <h2 class="visually-hidden">회원가입</h2>
+    <div class="d-flex justify-content-center">
+        <form class="col-md-4" id="frm" method="post" action="/member/join">
+            <div class="form-group">
+                <label for="userId">아이디</label>
+                <div class="d-flex justify-content-between">
+                    <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디">
+                    <button type="button" class="btn btn-secondary btn-dup" id="idDup">중복확인</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">
+                <p th:text="${valid_password}"></p>
+            </div>
+            <div class="form-group">
+                <label for="password_re">비밀번호 확인</label>
+                <input type="password" class="form-control" id="password_re" placeholder="비밀번호 확인">
+            </div>
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="이름">
+                <p th:text="${valid_name}"></p>
+            </div>
+            <div class="form-group mb-3">
+                <label for="email">이메일</label>
+                <div class="d-flex justify-content-between">
+                    <input type="text" class="form-control" id="email" name="email" placeholder="이메일">
+                    <button type="button" class="btn btn-secondary btn-dup" id="emailDup">중복확인</button>
+                </div>
+                <p th:text="${valid_email}"></p>
+            </div>
+            <div class="d-grid mb-3">
+                <button type="submit" id="btnSubmit" class="btn btn-primary">가입</button>
+            </div>
+            <nav class="d-flex justify-content-between">
+                <a href="/member/login">로그인</a>
+                <ul class="list-inline">
+                    <li class="list-inline-item"><a href="/member/find_id">아이디 찾기</a></li>
+                    <li class="list-inline-item"><a href="/member/find_pw">비밀번호 찾기</a></li>
+                </ul>
+            </nav>
+        </form>
+        <script>
+            let idCheck = false;
+            let emailCheck = false;
+            $('#idDup').click(function(){
+                const userId = $('#userId').val();
+                $.get('http://localhost:8080/api/member/exist/id/'+userId,function(res){
+                if(res.success){
+                    alert(res.data);
+                    idCheck = true;
+                } else{
+                    alert(res.data);
+                    idCheck = false;
+                }
+                });
+            });
+             $('#emailDup').click(function(){
+                const email = $('#email').val();
+                $.get('http://localhost:8080/api/member/exist/email/'+email,function(res){
+                if(res.success){
+                    alert(res.data);
+                    emailCheck = true;
+                } else{
+                    alert(res.data);
+                    emailCheck = false;
+                }
+                });
+            });
+           $('#frm').submit(function(e){
+            e.preventDefault();
+            if(idCheck&&emailCheck){
+            this.submit();
+            } else{
+                alert('아이디 또는 이메일 중복을 확인하세요.);
+            }
+           });
+        </script>
+    </div>
+</section>
+</body>
+</html>
